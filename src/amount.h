@@ -22,7 +22,10 @@ static const CAmount COIN = 100000000;
  * critical; in unusual circumstances like a(nother) overflow bug that allowed
  * for the creation of coins out of thin air modification could lead to a fork.
  * */
-static const CAmount MAX_MONEY = 21000000 * COIN;
+
+// 44 years = 430361280 = 215285760 + 107642880 + 53821440 + 26910720 + 13455360 + 6727680 + 3363840 + 1681920 + 840960 + 420480 + 210240
+// premine another 430361280 for investors
+static const CAmount MAX_MONEY = 430361280 * 2 * COIN;
 inline bool MoneyRange(const CAmount& nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 
 #endif //  BITCOIN_AMOUNT_H

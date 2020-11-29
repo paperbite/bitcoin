@@ -46,6 +46,9 @@
 #include <validationinterface.h>
 #include <warnings.h>
 
+#include <script/standard.h>
+#include <key_io.h>
+
 #include <string>
 
 #include <boost/algorithm/string/replace.hpp>
@@ -1219,12 +1222,17 @@ bool ReadRawBlockFromDisk(std::vector<uint8_t>& block, const CBlockIndex* pindex
 
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
 {
+    // premine for ICO
+    if (nHeight == 1) {
+        return 430361280 * COIN;
+    }
+
     int halvings = nHeight / consensusParams.nSubsidyHalvingInterval;
     // Force block reward to zero when right shift is undefined.
     if (halvings >= 64)
         return 0;
 
-    CAmount nSubsidy = 50 * COIN;
+    CAmount nSubsidy = (1 << 10) * COIN;
     // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
     nSubsidy >>= halvings;
     return nSubsidy;
@@ -2043,7 +2051,9 @@ bool CChainState::ConnectBlock(const CBlock& block, BlockValidationState& state,
     // post BIP34 before approximately height 486,000,000 and presumably will
     // be reset before it reaches block 1,983,702 and starts doing unnecessary
     // BIP30 checking again.
-    assert(pindex->pprev);
+    // if (block.GetHash() != chainparams.GetConsensus().hashGenesisBlock) {
+        assert(pindex->pprev);
+    // }
     CBlockIndex *pindexBIP34height = pindex->pprev->GetAncestor(chainparams.GetConsensus().BIP34Height);
     //Only continue to enforce if we're below BIP34 activation height or the block hash at that height doesn't correspond.
     fEnforceBIP30 = fEnforceBIP30 && (!pindexBIP34height || !(pindexBIP34height->GetBlockHash() == chainparams.GetConsensus().BIP34Hash));
@@ -2172,9 +2182,12 @@ bool CChainState::ConnectBlock(const CBlock& block, BlockValidationState& state,
     if (fJustCheck)
         return true;
 
-    if (!WriteUndoDataForBlock(blockundo, state, pindex, chainparams))
-        return false;
-
+    // if (block.GetHash() != chainparams.GetConsensus().hashGenesisBlock)
+    {
+        if (!WriteUndoDataForBlock(blockundo, state, pindex, chainparams))
+            return false;
+    } 
+    
     if (!pindex->IsValid(BLOCK_VALID_SCRIPTS)) {
         pindex->RaiseValidity(BLOCK_VALID_SCRIPTS);
         setDirtyBlockIndex.insert(pindex);
@@ -3313,7 +3326,7 @@ bool CheckBlock(const CBlock& block, BlockValidationState& state, const Consensu
         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-blk-length", "size limits failed");
 
     // First transaction must be coinbase, the rest must not be
-    if (block.vtx.empty() || !block.vtx[0]->IsCoinBase())
+    if (block.vtx.empty() || !block.vtx[0]->IsCoinBase()) 
         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-cb-missing", "first tx is not coinbase");
     for (unsigned int i = 1; i < block.vtx.size(); i++)
         if (block.vtx[i]->IsCoinBase())

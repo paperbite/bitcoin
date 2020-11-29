@@ -40,10 +40,10 @@ QString BitcoinUnits::longName(int unit)
 {
     switch(unit)
     {
-    case BTC: return QString("BTC");
-    case mBTC: return QString("mBTC");
-    case uBTC: return QString::fromUtf8("µBTC (bits)");
-    case SAT: return QString("Satoshi (sat)");
+    case BTC: return QString("PB");
+    case mBTC: return QString("mPB");
+    case uBTC: return QString::fromUtf8("µPB");
+    case SAT: return QString("Peeboshi");
     default: return QString("???");
     }
 }
@@ -52,8 +52,6 @@ QString BitcoinUnits::shortName(int unit)
 {
     switch(unit)
     {
-    case uBTC: return QString::fromUtf8("bits");
-    case SAT: return QString("sat");
     default: return longName(unit);
     }
 }
@@ -62,10 +60,10 @@ QString BitcoinUnits::description(int unit)
 {
     switch(unit)
     {
-    case BTC: return QString("Bitcoins");
-    case mBTC: return QString("Milli-Bitcoins (1 / 1" THIN_SP_UTF8 "000)");
-    case uBTC: return QString("Micro-Bitcoins (bits) (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-    case SAT: return QString("Satoshi (sat) (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+    case BTC: return QString("PBs");
+    case mBTC: return QString("Milli-PBs (1 / 1" THIN_SP_UTF8 "000)");
+    case uBTC: return QString("Micro-PBs (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+    case SAT: return QString("Peeboshi (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
     default: return QString("???");
     }
 }
